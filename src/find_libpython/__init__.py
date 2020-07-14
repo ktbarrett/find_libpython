@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Locate libpython associated with this Python executable.
 """
@@ -370,7 +368,3 @@ def main(args=None):
 
     ns = parser.parse_args(args)
     parser.exit(cli_find_libpython(**vars(ns)))
-
-
-if __name__ == "__main__":
-    main()
