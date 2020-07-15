@@ -34,6 +34,8 @@ import os
 import sys
 import sysconfig
 
+__version__ = "0.1.0"
+
 logger = getLogger("find_libpython")
 
 is_windows = os.name == "nt"
