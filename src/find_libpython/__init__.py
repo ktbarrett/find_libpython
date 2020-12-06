@@ -34,7 +34,7 @@ import os
 import sys
 import sysconfig
 
-__version__ = "0.1.0"
+from ._version import version as __version__
 
 logger = getLogger("find_libpython")
 

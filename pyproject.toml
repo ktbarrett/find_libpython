@@ -1,6 +1,10 @@
 [build-system]
 requires = [
-  "setuptools >= 40.9.0",
+  "setuptools >= 42",
   "wheel",
+  "setuptools_scm[toml]"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/find_libpython/_version.py"
