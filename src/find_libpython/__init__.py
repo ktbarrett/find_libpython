@@ -228,13 +228,13 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
 
     lib_basenames = list(candidate_names(suffix=suffix))
 
-    for directory in lib_dirs:
-        for basename in lib_basenames:
-            yield os.path.join(directory, basename)
-
     # In macOS and Windows, ctypes.util.find_library returns a full path:
     for basename in lib_basenames:
         yield ctypes.util.find_library(library_name(basename))
+
+    for directory in lib_dirs:
+        for basename in lib_basenames:
+            yield os.path.join(directory, basename)
 
 
 # Possibly useful links:
