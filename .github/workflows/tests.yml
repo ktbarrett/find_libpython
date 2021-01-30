@@ -19,3 +19,22 @@ jobs:
         run: pip install black
       - name: Run Black check
         run: black --check src/
+
+  ubuntu-system-python:
+    name: ${{ matrix.os }}-system-python
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os :
+          - ubuntu-18.04
+          - ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install System Python
+        run: |
+          sudo apt install python3-dev python3-pip
+      - name: Install Testing Requirements
+        run: python3 -m pip install nox
+      - name: Run Tests
+        run: python3 -m nox -e tests
