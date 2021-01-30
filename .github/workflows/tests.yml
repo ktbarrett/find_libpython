@@ -41,14 +41,14 @@ jobs:
 
   anaconda:
     name: ${{ matrix.os }}-anaconda-${{ matrix.env }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash -l {0}  # setup-miniconda requires using login bash shells to activate env
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.8']
         env: [base, test]
     steps:
@@ -72,6 +72,6 @@ jobs:
       - name: Conda Info
         run: conda info
       - name: Install Testing Requirements
-        run: python3 -m pip install nox
+        run: python -m pip install nox
       - name: Run Tests
-        run: python3 -m nox -e tests
+        run: python -m nox -e tests
