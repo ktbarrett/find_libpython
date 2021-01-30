@@ -1,0 +1,21 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_requests:
+    branches: [ master ]
+
+jobs:
+
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python
+        with:
+          python-versions
+      - name: Install Black
+        run: pip install black
+      - name: Run Black check
+        run: black --check src/
