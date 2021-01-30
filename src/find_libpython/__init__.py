@@ -34,7 +34,7 @@ import os
 import sys
 import sysconfig
 
-from ._version import version as __version__
+from find_libpython._version import version as __version__  # noqa: F401
 
 logger = getLogger("find_libpython")
 
