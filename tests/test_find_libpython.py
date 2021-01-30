@@ -1,13 +1,12 @@
-from find_libpython import finding_libpython, linked_libpython
-
-try:
-    unicode
-except NameError:
-    unicode = str  # for Python 3
+from find_libpython import find_libpython
+import ctypes
 
 
-def test_finding_libpython_yield_type():
-    paths = list(finding_libpython())
-    assert set(map(type, paths)) <= {str, unicode}
-# In a statically linked Python executable, no paths may be found.  So
-# let's just check returned type of finding_libpython.
+def test_find_libpython():
+    # find path
+    path = find_libpython()
+    # ensure we have a path
+    assert path is not None
+    # check to ensure it is a libpython share object
+    lib = ctypes.CDLL(path)
+    assert hasattr(lib, 'Py_Initialize')
