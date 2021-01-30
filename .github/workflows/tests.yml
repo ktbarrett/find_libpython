@@ -38,3 +38,40 @@ jobs:
         run: python3 -m pip install nox
       - name: Run Tests
         run: python3 -m nox -e tests
+
+  anaconda:
+    name: ${{ matrix.os }}-anaconda-${{ matrix.env }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}  # setup-miniconda requires using login bash shells to activate env
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.8']
+        env: [base, test]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        if: matrix.env == 'base'
+        with:
+          # using the base env is a bit different
+          # cannot specify python-version,
+          # must have activate-environment: ''
+          auto-update-conda: true
+          auto-activate-base: true
+          activate-environment: ''
+      - uses: conda-incubator/setup-miniconda@v2
+        if: matrix.env != 'base'
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-activate-base: false
+          auto-update-conda: true
+          activate-environment: ${{ matrix.env }}
+      - name: Conda Info
+        run: conda info
+      - name: Install Testing Requirements
+        run: python3 -m pip install nox
+      - name: Run Tests
+        run: python3 -m nox -e tests
