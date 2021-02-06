@@ -113,12 +113,12 @@ def candidate_names(suffix=SHLIB_SUFFIX):
         Candidate name libpython.
     """
     LDLIBRARY = sysconfig.get_config_var("LDLIBRARY")
-    if LDLIBRARY:
+    if LDLIBRARY and os.path.splitext(LDLIBRARY)[1] == suffix:
         yield LDLIBRARY
 
     LIBRARY = sysconfig.get_config_var("LIBRARY")
-    if LIBRARY:
-        yield os.path.splitext(LIBRARY)[0] + suffix
+    if LIBRARY and os.path.splitext(LIBRARY)[1] == suffix:
+        yield LIBRARY
 
     dlprefix = "" if is_windows else "lib"
     sysdata = dict(
