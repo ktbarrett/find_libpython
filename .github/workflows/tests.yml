@@ -105,3 +105,67 @@ jobs:
         run: python3 -m pip install nox
       - name: Run Tests
         run: python3 -m nox -e tests
+
+  msys:
+    name: ${{ matrix.msystem }}-system-python
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        msystem: [MSYS, MINGW64]
+    steps:
+      - name: Install msys2 (MINGW64)
+        if: matrix.msystem == 'MINGW64'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: >-
+            git
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-python-pip
+            mingw-w64-x86_64-python-setuptools
+            mingw-w64-x86_64-python-wheel
+            mingw-w64-x86_64-python-setuptools-scm
+          update: true
+      - name: Install msys2 (MSYS)
+        if: matrix.msystem == 'MSYS'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          install: >-
+            msys2-devel
+            git
+            python
+            python-devel
+            python-pip
+            python-setuptools
+            python-setuptools-scm
+          update: true
+      - name: Install wheel package (MSYS)
+        if: matrix.msystem == 'MSYS'
+        run: pip install --no-build-isolation wheel
+      - uses: actions/checkout@v2
+      - name: Python Info
+        run: |
+          python --version
+          pip freeze
+      - name: Install package
+        run: pip install --no-build-isolation .
+      - name: Print libpython Info
+        run: |
+          echo 'NAMES'
+          find_libpython -v --candidate-names
+          echo 'PATHS'
+          find_libpython -v --candidate-paths
+          echo 'LOCATION'
+          find_libpython -v
+      - name: Install Testing Requirements
+        run: pip install --no-build-isolation pytest pytest-cov
+      - name: Run Tests
+        run: |
+          pytest --cov --cov-branch tests/
+          pytest --cov --cov-branch --cov-append --doctest-modules $(python -c 'import find_libpython; print(find_libpython.__file__)')
