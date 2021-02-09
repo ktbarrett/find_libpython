@@ -40,6 +40,8 @@ logger = getLogger("find_libpython")
 
 is_windows = os.name == "nt"
 is_apple = sys.platform == "darwin"
+is_msys = sysconfig.get_platform().startswith("msys")
+is_mingw = sysconfig.get_platform().startswith("mingw")
 
 SHLIB_SUFFIX = sysconfig.get_config_var("SHLIB_SUFFIX")
 if SHLIB_SUFFIX is None:
@@ -120,7 +122,17 @@ def candidate_names(suffix=SHLIB_SUFFIX):
     if LIBRARY and os.path.splitext(LIBRARY)[1] == suffix:
         yield LIBRARY
 
-    dlprefix = "" if is_windows else "lib"
+    DLLLIBRARY = sysconfig.get_config_var("DLLLIBRARY")
+    if DLLLIBRARY:
+        yield DLLLIBRARY
+
+    if is_mingw:
+        dlprefix = "lib"
+    elif is_windows or is_msys:
+        dlprefix = ""
+    else:
+        dlprefix = "lib"
+
     sysdata = dict(
         v=sys.version_info,
         # VERSION is X.Y in Linux/macOS and XY in Windows:
@@ -168,7 +180,7 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
     #
     # But we try other places just in case.
 
-    if is_windows:
+    if is_windows or is_msys or is_mingw:
         lib_dirs.append(os.path.join(os.path.dirname(sys.executable)))
     else:
         lib_dirs.append(
@@ -256,6 +268,8 @@ def finding_libpython():
     """
     logger.debug("is_windows = %s", is_windows)
     logger.debug("is_apple = %s", is_apple)
+    logger.debug("is_mingw = %s", is_mingw)
+    logger.debug("is_msys = %s", is_msys)
     for path in candidate_paths():
         logger.debug("Candidate: %s", path)
         normalized = normalize_path(path)
