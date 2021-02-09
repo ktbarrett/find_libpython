@@ -190,3 +190,19 @@ jobs:
       - name: Run Tests
         run: |
           nox -e tests
+
+  homebrew:
+    name: homebrew-system-python
+    runs-on: macos-latest
+    steps:
+      - name: Install Python and Git
+        run: |
+          brew install python git
+      - name: Download Source
+        uses: actions/checkout@v2
+      - name: Install Testing Requirements
+        run: |
+          python3 -m pip install nox
+      - name: Run Tests
+        run: |
+          python3 -m nox -e tests
