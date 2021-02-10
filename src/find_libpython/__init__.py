@@ -329,6 +329,10 @@ def main(args=None):
         "--verbose", "-v", action="store_true", help="Print debugging information."
     )
 
+    parser.add_argument(
+        "--version", action="version", version="find_libpython {}".format(__version__)
+    )
+
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
         "--list-all",
