@@ -19,6 +19,11 @@ def tests(session):
     # install current module and runtime dependencies
     session.install('.')
 
+    # print info
+    session.run('python', '-m', 'find_libpython', '--candidate-names')
+    session.run('python', '-m', 'find_libpython', '--candidate-paths')
+    session.run('python', '-m', 'find_libpython', '-v')
+
     # install testing dependencies
     session.install(*test_reqs)
 
