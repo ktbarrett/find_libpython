@@ -196,3 +196,22 @@ jobs:
       - name: Run Tests
         run: |
           python3 -m nox -e tests
+
+  archlinux:
+    name: archlinux-system-python
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux
+      options: --privileged
+    steps:
+      - name: Install Python and Git
+        run: |
+          pacman --noconfirm -Sy python python-pip git
+      - name: Download Source
+        uses: actions/checkout@v2
+      - name: Install Testing Requirements
+        run: |
+          pip install nox
+      - name: Run Tests
+        run: |
+          nox -e tests
