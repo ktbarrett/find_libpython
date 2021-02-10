@@ -125,35 +125,6 @@ def candidate_names(suffix=SHLIB_SUFFIX):
     if DLLLIBRARY:
         yield DLLLIBRARY
 
-    if is_mingw:
-        dlprefix = "lib"
-    elif is_windows or is_msys:
-        dlprefix = ""
-    else:
-        dlprefix = "lib"
-
-    sysdata = dict(
-        v=sys.version_info,
-        # VERSION is X.Y in Linux/macOS and XY in Windows:
-        VERSION=(
-            sysconfig.get_config_var("VERSION")
-            or "{v.major}.{v.minor}".format(v=sys.version_info)
-        ),
-        ABIFLAGS=(
-            sysconfig.get_config_var("ABIFLAGS")
-            or sysconfig.get_config_var("abiflags")
-            or ""
-        ),
-    )
-
-    for stem in [
-        "python{VERSION}{ABIFLAGS}".format(**sysdata),
-        "python{VERSION}".format(**sysdata),
-        "python{v.major}".format(**sysdata),
-        "python",
-    ]:
-        yield dlprefix + stem + suffix
-
 
 def linked_pythondll() -> str:
     # On Windows there is the `sys.dllhandle` attribute which is the
