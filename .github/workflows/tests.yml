@@ -26,9 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os :
-          - ubuntu-18.04
-          - ubuntu-20.04
+        os: [ubuntu-18.04, ubuntu-20.04]
     steps:
       - uses: actions/checkout@v2
       - name: Install System Python
@@ -50,7 +48,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.8']
-        env: [base, test]
+        env: [test]
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
@@ -69,8 +67,6 @@ jobs:
           auto-activate-base: false
           auto-update-conda: true
           activate-environment: ${{ matrix.env }}
-      - name: Conda Info
-        run: conda info
       - name: Install Testing Requirements
         run: python -m pip install nox
       - name: Run Tests
@@ -99,8 +95,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install System Python
         run: yum install -y python3-devel python3-pip python3
-      - name: Python Info
-        run: python3 --version
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -149,13 +143,9 @@ jobs:
         if: matrix.msystem == 'MSYS'
         run: pip install --no-build-isolation wheel
       - uses: actions/checkout@v2
-      - name: Python Info
-        run: |
-          python --version
-          pip freeze
       - name: Install package
         run: pip install --no-build-isolation .
-      - name: Print libpython Info
+      - name: Print libpython
         run: |
           echo 'NAMES'
           find_libpython -v --candidate-names
