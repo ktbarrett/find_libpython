@@ -169,3 +169,24 @@ jobs:
         run: |
           pytest --cov --cov-branch tests/
           pytest --cov --cov-branch --cov-append --doctest-modules $(python -c 'import find_libpython; print(find_libpython.__file__)')
+
+  alpine:
+    name: alpine-system-python
+    runs-on: ubuntu-latest
+    container: "alpine:latest"
+    steps:
+      - name: Update Packages
+        run: |
+          apk update
+          apk upgrade
+      - name: Install Python and Git
+        run: |
+          apk add python3 python3-dev py3-pip git
+      - name: Download Source
+        uses: actions/checkout@v2
+      - name: Install Testing Requirements
+        run: |
+          pip install nox
+      - name: Run Tests
+        run: |
+          nox -e tests
