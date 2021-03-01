@@ -155,6 +155,35 @@ def candidate_names(suffix=SHLIB_SUFFIX):
         yield dlprefix + stem + suffix
 
 
+def linked_pythondll() -> str:
+    # On Windows there is the `sys.dllhandle` attribute which is the
+    # DLL Handle ID for the associated python.dll for the installation.
+    # We can use the GetModuleFileName function to get the path to the
+    # python.dll this way.
+
+    # sys.dllhandle is an module ID, which is just a void* cast to an integer,
+    # we turn it back into a pointer for the ctypes call
+    dll_hmodule = ctypes.cast(sys.dllhandle, ctypes.c_void_p)
+
+    # create a buffer for the return path of the maximum length of filepaths in Windows unicode interfaces
+    # https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
+    path_return_buffer = ctypes.create_unicode_buffer(32768)
+
+    # GetModuleFileName sets the return buffer to the value of the path used to load the module.
+    # We expect it to always be a normalized absolute path to python.dll.
+    r = ctypes.windll.kernel32.GetModuleFileNameW(
+        dll_hmodule, path_return_buffer, len(path_return_buffer)
+    )
+
+    # The return value is the length of the returned string in unicode characters
+    # if the size of the buffer (argument 3) is returned, the buffer was too small.
+    # Don't know what else to do here but give up.
+    if r == len(path_return_buffer):
+        return None
+
+    return path_return_buffer.value
+
+
 @uniquified
 def candidate_paths(suffix=SHLIB_SUFFIX):
     """
@@ -166,6 +195,9 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
         Candidate path to libpython.  The path may not be a fullpath
         and may not exist.
     """
+
+    if is_windows:
+        yield linked_pythondll()
 
     # List candidates for directories in which libpython may exist
     lib_dirs = []
