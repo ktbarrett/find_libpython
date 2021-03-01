@@ -1,5 +1,6 @@
 
 Copyright 2018, Takafumi Arakaki
+Copyright Kaleb Barrett
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
