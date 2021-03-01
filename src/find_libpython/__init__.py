@@ -37,10 +37,10 @@ from find_libpython._version import version as __version__  # noqa: F401
 
 logger = getLogger("find_libpython")
 
-is_windows = os.name == "nt"
 is_apple = sys.platform == "darwin"
 is_msys = sysconfig.get_platform().startswith("msys")
 is_mingw = sysconfig.get_platform().startswith("mingw")
+is_windows = os.name == "nt" and not is_mingw and not is_msys
 
 SHLIB_SUFFIX = sysconfig.get_config_var("SHLIB_SUFFIX")
 if SHLIB_SUFFIX is None:
