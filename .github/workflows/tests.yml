@@ -37,9 +37,13 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
 
-  windows-python:
-    name: windows-python
-    runs-on: windows-latest
+  setup-python:
+    name: ${{ matrix.os }}-setup-python
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
