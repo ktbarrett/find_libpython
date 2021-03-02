@@ -37,6 +37,21 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
 
+  windows-python:
+    name: windows-python
+    runs-on: windows-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install Testing Requirements
+        run: python -m pip install nox
+      - name: Run tests
+        run: python -m nox -e tests
+
   anaconda:
     name: ${{ matrix.os }}-anaconda-${{ matrix.env }}
     runs-on: ${{ matrix.os }}
