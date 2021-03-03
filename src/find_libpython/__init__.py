@@ -26,64 +26,62 @@ Locate libpython associated with this Python executable.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from logging import getLogger
-import ctypes.util
-import functools
+from logging import getLogger as _getLogger
+from sysconfig import get_config_var as _get_config_var
 import os
 import sys
-import sysconfig
 
 from find_libpython._version import version as __version__  # noqa: F401
 
-logger = getLogger("find_libpython")
+_logger = _getLogger("find_libpython")
 
-is_apple = sys.platform == "darwin"
-is_msys = sysconfig.get_platform().startswith("msys")
-is_mingw = sysconfig.get_platform().startswith("mingw")
-is_windows = os.name == "nt" and not is_mingw and not is_msys
+_is_apple = sys.platform == "darwin"
+_is_msys = sys.platform == "msys"
+_is_mingw = sys.platform == "mingw"
+_is_windows = os.name == "nt" and not _is_mingw and not _is_msys
 
-SHLIB_SUFFIX = sysconfig.get_config_var("SHLIB_SUFFIX")
-if SHLIB_SUFFIX is None:
-    if is_windows:
-        SHLIB_SUFFIX = ".dll"
+_SHLIB_SUFFIX = _get_config_var("_SHLIB_SUFFIX")
+if _SHLIB_SUFFIX is None:
+    if _is_windows:
+        _SHLIB_SUFFIX = ".dll"
     else:
-        SHLIB_SUFFIX = ".so"
-if is_apple:
-    # sysconfig.get_config_var("SHLIB_SUFFIX") can be ".so" in macOS.
+        _SHLIB_SUFFIX = ".so"
+if _is_apple:
+    # _get_config_var("_SHLIB_SUFFIX") can be ".so" in macOS.
     # Let's not use the value from sysconfig.
-    SHLIB_SUFFIX = ".dylib"
+    _SHLIB_SUFFIX = ".dylib"
 
 
-def library_name(name, suffix=SHLIB_SUFFIX, is_windows=is_windows):
+def _library_name(name, suffix=_SHLIB_SUFFIX, _is_windows=_is_windows):
     """
     Convert a file basename `name` to a library name (no "lib" and ".so" etc.)
 
-    >>> library_name("libpython3.7m.so")                   # doctest: +SKIP
+    >>> _library_name("libpython3.7m.so")                   # doctest: +SKIP
     'python3.7m'
-    >>> library_name("libpython3.7m.so", suffix=".so", is_windows=False)
+    >>> _library_name("libpython3.7m.so", suffix=".so", _is_windows=False)
     'python3.7m'
-    >>> library_name("libpython3.7m.dylib", suffix=".dylib", is_windows=False)
+    >>> _library_name("libpython3.7m.dylib", suffix=".dylib", _is_windows=False)
     'python3.7m'
-    >>> library_name("python37.dll", suffix=".dll", is_windows=True)
+    >>> _library_name("python37.dll", suffix=".dll", _is_windows=True)
     'python37'
     """
-    if not is_windows and name.startswith("lib"):
+    if not _is_windows and name.startswith("lib"):
         name = name[len("lib") :]
     if suffix and name.endswith(suffix):
         name = name[: -len(suffix)]
     return name
 
 
-def append_truthy(list, item):
+def _append_truthy(list, item):
     if item:
         list.append(item)
 
 
-def uniquifying(items):
+def _uniquifying(items):
     """
     Yield items while excluding the duplicates and preserving the order.
 
-    >>> list(uniquifying([1, 2, 1, 2, 3]))
+    >>> list(_uniquifying([1, 2, 1, 2, 3]))
     [1, 2, 3]
     """
     seen = set()
@@ -93,18 +91,19 @@ def uniquifying(items):
         seen.add(x)
 
 
-def uniquified(func):
-    """ Wrap iterator returned from `func` by `uniquifying`. """
+def _uniquified(func):
+    """ Wrap iterator returned from `func` by `_uniquifying`. """
+    from functools import wraps
 
-    @functools.wraps(func)
+    @wraps(func)
     def wrapper(*args, **kwds):
-        return uniquifying(func(*args, **kwds))
+        return _uniquifying(func(*args, **kwds))
 
     return wrapper
 
 
-@uniquified
-def candidate_names(suffix=SHLIB_SUFFIX):
+@_uniquified
+def candidate_names(suffix=_SHLIB_SUFFIX):
     """
     Iterate over candidate file names of libpython.
 
@@ -113,21 +112,21 @@ def candidate_names(suffix=SHLIB_SUFFIX):
     name : str
         Candidate name libpython.
     """
-    LDLIBRARY = sysconfig.get_config_var("LDLIBRARY")
+    LDLIBRARY = _get_config_var("LDLIBRARY")
     if LDLIBRARY and os.path.splitext(LDLIBRARY)[1] == suffix:
         yield LDLIBRARY
 
-    LIBRARY = sysconfig.get_config_var("LIBRARY")
+    LIBRARY = _get_config_var("LIBRARY")
     if LIBRARY and os.path.splitext(LIBRARY)[1] == suffix:
         yield LIBRARY
 
-    DLLLIBRARY = sysconfig.get_config_var("DLLLIBRARY")
+    DLLLIBRARY = _get_config_var("DLLLIBRARY")
     if DLLLIBRARY:
         yield DLLLIBRARY
 
-    if is_mingw:
+    if _is_mingw:
         dlprefix = "lib"
-    elif is_windows or is_msys:
+    elif _is_windows or _is_msys:
         dlprefix = ""
     else:
         dlprefix = "lib"
@@ -136,14 +135,10 @@ def candidate_names(suffix=SHLIB_SUFFIX):
         v=sys.version_info,
         # VERSION is X.Y in Linux/macOS and XY in Windows:
         VERSION=(
-            sysconfig.get_config_var("VERSION")
+            _get_config_var("VERSION")
             or "{v.major}.{v.minor}".format(v=sys.version_info)
         ),
-        ABIFLAGS=(
-            sysconfig.get_config_var("ABIFLAGS")
-            or sysconfig.get_config_var("abiflags")
-            or ""
-        ),
+        ABIFLAGS=(_get_config_var("ABIFLAGS") or _get_config_var("abiflags") or ""),
     )
 
     for stem in [
@@ -155,7 +150,9 @@ def candidate_names(suffix=SHLIB_SUFFIX):
         yield dlprefix + stem + suffix
 
 
-def linked_pythondll() -> str:
+def _linked_pythondll() -> str:
+    import ctypes
+
     # On Windows there is the `sys.dllhandle` attribute which is the
     # DLL Handle ID for the associated python.dll for the installation.
     # We can use the GetModuleFileName function to get the path to the
@@ -184,8 +181,8 @@ def linked_pythondll() -> str:
     return path_return_buffer.value
 
 
-@uniquified
-def candidate_paths(suffix=SHLIB_SUFFIX):
+@_uniquified
+def candidate_paths(suffix=_SHLIB_SUFFIX):
     """
     Iterate over candidate paths of libpython.
 
@@ -196,14 +193,14 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
         and may not exist.
     """
 
-    if is_windows:
-        yield linked_pythondll()
+    if _is_windows:
+        yield _linked_pythondll()
 
     # List candidates for directories in which libpython may exist
     lib_dirs = []
-    append_truthy(lib_dirs, sysconfig.get_config_var("LIBPL"))
-    append_truthy(lib_dirs, sysconfig.get_config_var("srcdir"))
-    append_truthy(lib_dirs, sysconfig.get_config_var("LIBDIR"))
+    _append_truthy(lib_dirs, _get_config_var("LIBPL"))
+    _append_truthy(lib_dirs, _get_config_var("srcdir"))
+    _append_truthy(lib_dirs, _get_config_var("LIBDIR"))
 
     # LIBPL seems to be the right config_var to use.  It is the one
     # used in python-config when shared library is not enabled:
@@ -211,7 +208,7 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
     #
     # But we try other places just in case.
 
-    if is_windows or is_msys or is_mingw:
+    if _is_windows or _is_msys or _is_mingw:
         lib_dirs.append(os.path.join(os.path.dirname(sys.executable)))
     else:
         lib_dirs.append(
@@ -219,7 +216,7 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
         )
 
     # For macOS:
-    append_truthy(lib_dirs, sysconfig.get_config_var("PYTHONFRAMEWORKPREFIX"))
+    _append_truthy(lib_dirs, _get_config_var("PYTHONFRAMEWORKPREFIX"))
 
     lib_dirs.append(sys.exec_prefix)
     lib_dirs.append(os.path.join(sys.exec_prefix, "lib"))
@@ -230,9 +227,11 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
         for basename in lib_basenames:
             yield os.path.join(directory, basename)
 
+    from ctypes.util import find_library
+
     # In macOS and Windows, ctypes.util.find_library returns a full path:
     for basename in lib_basenames:
-        yield ctypes.util.find_library(library_name(basename))
+        yield find_library(_library_name(basename))
 
 
 # Possibly useful links:
@@ -241,12 +240,12 @@ def candidate_paths(suffix=SHLIB_SUFFIX):
 # * https://github.com/Valloric/ycmd/pull/519
 
 
-def normalize_path(path, suffix=SHLIB_SUFFIX, is_apple=is_apple):
+def _normalize_path(path, suffix=_SHLIB_SUFFIX, _is_apple=_is_apple):
     """
     Normalize shared library `path` to a real path.
 
     If `path` is not a full path, `None` is returned.  If `path` does
-    not exists, append `SHLIB_SUFFIX` and check if it exists.
+    not exists, append `_SHLIB_SUFFIX` and check if it exists.
     Finally, the path is canonicalized by following the symlinks.
 
     Parameters
@@ -262,8 +261,10 @@ def normalize_path(path, suffix=SHLIB_SUFFIX, is_apple=is_apple):
         return os.path.realpath(path)
     if os.path.exists(path + suffix):
         return os.path.realpath(path + suffix)
-    if is_apple:
-        return normalize_path(_remove_suffix_apple(path), suffix=".so", is_apple=False)
+    if _is_apple:
+        return _normalize_path(
+            _remove_suffix_apple(path), suffix=".so", _is_apple=False
+        )
     return None
 
 
@@ -285,8 +286,8 @@ def _remove_suffix_apple(path):
     return path
 
 
-@uniquified
-def finding_libpython():
+@_uniquified
+def _finding_libpython():
     """
     Iterate over existing libpython paths.
 
@@ -297,18 +298,18 @@ def finding_libpython():
     path : str
         Existing path to a libpython.
     """
-    logger.debug("is_windows = %s", is_windows)
-    logger.debug("is_apple = %s", is_apple)
-    logger.debug("is_mingw = %s", is_mingw)
-    logger.debug("is_msys = %s", is_msys)
+    _logger.debug("_is_windows = %s", _is_windows)
+    _logger.debug("_is_apple = %s", _is_apple)
+    _logger.debug("_is_mingw = %s", _is_mingw)
+    _logger.debug("_is_msys = %s", _is_msys)
     for path in candidate_paths():
-        logger.debug("Candidate: %s", path)
-        normalized = normalize_path(path)
+        _logger.debug("Candidate: %s", path)
+        normalized = _normalize_path(path)
         if normalized:
-            logger.debug("Found: %s", normalized)
+            _logger.debug("Found: %s", normalized)
             yield normalized
         else:
-            logger.debug("Not found.")
+            _logger.debug("Not found.")
 
 
 def find_libpython():
@@ -320,31 +321,31 @@ def find_libpython():
     path : str or None
         Existing path to the (supposedly) correct libpython.
     """
-    for path in finding_libpython():
+    for path in _finding_libpython():
         return os.path.realpath(path)
 
 
-def print_all(items):
+def _print_all(items):
     for x in items:
         print(x)
 
 
-def cli_find_libpython(cli_op, verbose):
+def _cli_find_libpython(cli_op, verbose):
     import logging
 
     # Importing `logging` module here so that using `logging.debug`
-    # instead of `logger.debug` outside of this function becomes an
+    # instead of `_logger.debug` outside of this function becomes an
     # error.
 
     if verbose:
         logging.basicConfig(format="%(levelname)s %(message)s", level=logging.DEBUG)
 
     if cli_op == "list-all":
-        print_all(finding_libpython())
+        _print_all(_finding_libpython())
     elif cli_op == "candidate-names":
-        print_all(candidate_names())
+        _print_all(candidate_names())
     elif cli_op == "candidate-paths":
-        print_all(p for p in candidate_paths() if p and os.path.isabs(p))
+        _print_all(p for p in candidate_paths() if p and os.path.isabs(p))
     else:
         path = find_libpython()
         if path is None:
@@ -388,4 +389,4 @@ def main(args=None):
     )
 
     ns = parser.parse_args(args)
-    parser.exit(cli_find_libpython(**vars(ns)))
+    parser.exit(_cli_find_libpython(**vars(ns)))
