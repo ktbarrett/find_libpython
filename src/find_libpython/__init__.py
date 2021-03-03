@@ -28,6 +28,8 @@ Locate libpython associated with this Python executable.
 
 from logging import getLogger as _getLogger
 from sysconfig import get_config_var as _get_config_var
+from ctypes.util import find_library as _find_library
+import ctypes
 import os
 import sys
 
@@ -51,6 +53,31 @@ if _is_apple:
     # _get_config_var("_SHLIB_SUFFIX") can be ".so" in macOS.
     # Let's not use the value from sysconfig.
     _SHLIB_SUFFIX = ".dylib"
+
+
+def _linked_libpython_unix():
+    class Dl_info(ctypes.Structure):
+        _fields_ = [
+            ("dli_fname", ctypes.c_char_p),
+            ("dli_fbase", ctypes.c_void_p),
+            ("dli_sname", ctypes.c_char_p),
+            ("dli_saddr", ctypes.c_void_p),
+        ]
+
+    libdl = ctypes.CDLL(_find_library("dl"))
+    libdl.dladdr.argtypes = [ctypes.c_void_p, ctypes.POINTER(Dl_info)]
+    libdl.dladdr.restype = ctypes.c_int
+
+    dlinfo = Dl_info()
+    retcode = libdl.dladdr(
+        ctypes.cast(ctypes.pythonapi.Py_GetVersion, ctypes.c_void_p),
+        ctypes.pointer(dlinfo),
+    )
+    if retcode == 0:  # means error
+        return None
+    if path == os.path.realpath(sys.executable):
+        return None
+    return os.path.realpath(dlinfo.dli_fname.decode())
 
 
 def _library_name(name, suffix=_SHLIB_SUFFIX, _is_windows=_is_windows):
@@ -150,7 +177,6 @@ def candidate_names(suffix=_SHLIB_SUFFIX):
 
 
 def _linked_pythondll() -> str:
-    import ctypes
 
     # On Windows there is the `sys.dllhandle` attribute which is the
     # DLL Handle ID for the associated python.dll for the installation.
@@ -194,6 +220,8 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
 
     if _is_windows:
         yield _linked_pythondll()
+    elif _is_posix and not _is_msys:
+        yield _linked_libpython_unix()
 
     # List candidates for directories in which libpython may exist
     lib_dirs = []
@@ -226,11 +254,9 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
         for basename in lib_basenames:
             yield os.path.join(directory, basename)
 
-    from ctypes.util import find_library
-
     # In macOS and Windows, ctypes.util.find_library returns a full path:
     for basename in lib_basenames:
-        yield find_library(_library_name(basename))
+        yield _find_library(_library_name(basename))
 
 
 # Possibly useful links:
