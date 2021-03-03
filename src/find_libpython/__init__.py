@@ -144,8 +144,6 @@ def candidate_names(suffix=_SHLIB_SUFFIX):
     for stem in [
         "python{VERSION}{ABIFLAGS}".format(**sysdata),
         "python{VERSION}".format(**sysdata),
-        "python{v.major}".format(**sysdata),
-        "python",
     ]:
         yield dlprefix + stem + suffix
 
