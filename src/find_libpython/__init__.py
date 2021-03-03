@@ -39,6 +39,7 @@ _is_apple = sys.platform == "darwin"
 _is_msys = sys.platform == "msys"
 _is_mingw = sys.platform == "mingw"
 _is_windows = os.name == "nt" and not _is_mingw and not _is_msys
+_is_posix = os.name == "posix"
 
 _SHLIB_SUFFIX = _get_config_var("_SHLIB_SUFFIX")
 if _SHLIB_SUFFIX is None:
@@ -300,6 +301,7 @@ def _finding_libpython():
     _logger.debug("_is_apple = %s", _is_apple)
     _logger.debug("_is_mingw = %s", _is_mingw)
     _logger.debug("_is_msys = %s", _is_msys)
+    _logger.debug("_is_posix = %s", _is_posix)
     for path in candidate_paths():
         _logger.debug("Candidate: %s", path)
         normalized = _normalize_path(path)
