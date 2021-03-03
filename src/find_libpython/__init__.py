@@ -55,7 +55,10 @@ if _is_apple:
     _SHLIB_SUFFIX = ".dylib"
 
 
-def _linked_libpython_unix():
+def _linked_libpython_unix(libpython):
+    if not hasattr(libpython, "Py_GetVersion"):
+        return None
+
     class Dl_info(ctypes.Structure):
         _fields_ = [
             ("dli_fname", ctypes.c_char_p),
@@ -70,12 +73,10 @@ def _linked_libpython_unix():
 
     dlinfo = Dl_info()
     retcode = libdl.dladdr(
-        ctypes.cast(ctypes.pythonapi.Py_GetVersion, ctypes.c_void_p),
+        ctypes.cast(libpython.Py_GetVersion, ctypes.c_void_p),
         ctypes.pointer(dlinfo),
     )
     if retcode == 0:  # means error
-        return None
-    if path == os.path.realpath(sys.executable):
         return None
     return os.path.realpath(dlinfo.dli_fname.decode())
 
@@ -220,8 +221,6 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
 
     if _is_windows:
         yield _linked_pythondll()
-    elif _is_posix and not _is_msys:
-        yield _linked_libpython_unix()
 
     # List candidates for directories in which libpython may exist
     lib_dirs = []
@@ -249,6 +248,15 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
     lib_dirs.append(os.path.join(sys.exec_prefix, "lib"))
 
     lib_basenames = list(candidate_names(suffix=suffix))
+
+    if _is_posix and not _is_msys:
+        for basename in lib_basenames:
+            try:
+                libpython = ctypes.CDLL(basename)
+            except OSError:
+                pass
+            else:
+                yield _linked_libpython_unix(libpython)
 
     for directory in lib_dirs:
         for basename in lib_basenames:
