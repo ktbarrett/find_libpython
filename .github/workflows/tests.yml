@@ -252,7 +252,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          miniconda-version: latest
+          miniconda-version: "4.5.12"
           architecture: x86
       - name: Conda Info
         run: |
