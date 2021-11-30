@@ -121,7 +121,7 @@ def _uniquifying(items):
 
 
 def _uniquified(func):
-    """ Wrap iterator returned from `func` by `_uniquifying`. """
+    """Wrap iterator returned from `func` by `_uniquifying`."""
     from functools import wraps
 
     @wraps(func)

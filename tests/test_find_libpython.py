@@ -10,7 +10,7 @@ def test_find_libpython():
     assert path is not None
     # check to ensure it is a libpython share object
     lib = ctypes.CDLL(path)
-    assert hasattr(lib, 'Py_Initialize')
+    assert hasattr(lib, "Py_Initialize")
     # ensure it's the right version...
     lib.Py_GetVersion.restype = ctypes.c_char_p
     lib_version = lib.Py_GetVersion().decode().split()[0]
