@@ -141,6 +141,18 @@ def candidate_names(suffix=_SHLIB_SUFFIX):
     name : str
         Candidate name libpython.
     """
+
+    # Quoting configure.ac in the cpython code base:
+    # "INSTSONAME is the name of the shared library that will be use to install
+    # on the system - some systems like version suffix, others don't.""
+    #
+    # A typical INSTSONAME is 'libpython3.8.so.1.0' on Linux, or
+    # 'Python.framework/Versions/3.9/Python' on MacOS. Due to the possible
+    # version suffix we have to find the suffix within the filename.
+    INSTSONAME = _get_config_var("INSTSONAME")
+    if INSTSONAME and suffix in INSTSONAME:
+        yield INSTSONAME
+
     LDLIBRARY = _get_config_var("LDLIBRARY")
     if LDLIBRARY and os.path.splitext(LDLIBRARY)[1] == suffix:
         yield LDLIBRARY
