@@ -124,6 +124,32 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
 
+  rhel8-appstream-py38:
+    name: rhel8-appstream-py38
+    runs-on: ubuntu-latest
+    container: "almalinux:8"
+    steps:
+      - name: Install Git and Python 3.8 from AppStream
+        run: yum install -y git python38-devel python38-pip python38-pip-wheel python38
+      - uses: actions/checkout@v2
+      - name: Install Testing Requirements
+        run: python3 -m pip install nox
+      - name: Run Tests
+        run: python3 -m nox -e tests
+
+  rhel8-appstream-py39:
+    name: rhel8-appstream-py39
+    runs-on: ubuntu-latest
+    container: "almalinux:8"
+    steps:
+      - name: Install Git and Python 3.9 from AppStream
+        run: yum install -y git python39-devel python39-pip python39-pip-wheel python39
+      - uses: actions/checkout@v2
+      - name: Install Testing Requirements
+        run: python3 -m pip install nox
+      - name: Run Tests
+        run: python3 -m nox -e tests
+
   msys:
     name: ${{ matrix.msystem }}-system-python
     runs-on: windows-latest
