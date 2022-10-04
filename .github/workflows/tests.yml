@@ -93,29 +93,32 @@ jobs:
       - name: Run Tests
         run: python -m nox -e tests
 
-  rhel:
-    name: rhel${{ matrix.os-version }}-system-python
+  rhel7:
+    name: rhel7-system-python
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os-version: ["7", "8"]
-    container: "centos:${{ matrix.os-version }}"
+    container: "centos:7"
     steps:
-      - name: Install newer Git (CentOS 7)
-        if: matrix.os-version == '7'
+      - name: Install newer Git
         run: |
           yum install -y https://repo.ius.io/ius-release-el7.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
           yum remove -y git
           yum install -y git224
-      - name: Install newer Git (CentOS 8)
-        if: matrix.os-version == '8'
-        run: |
-          dnf update -y
-          dnf install -y git
       - uses: actions/checkout@v2
       - name: Install System Python
         run: yum install -y python3-devel python3-pip python3
+      - name: Install Testing Requirements
+        run: python3 -m pip install nox
+      - name: Run Tests
+        run: python3 -m nox -e tests
+
+  rhel8-system-python:
+    name: rhel8-system-python
+    runs-on: ubuntu-latest
+    container: "almalinux:8"
+    steps:
+      - name: Install Git and System Python
+        run: yum install -y git python3-devel python3-pip python3
+      - uses: actions/checkout@v2
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
