@@ -13,8 +13,8 @@ jobs:
   black:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
       - name: Install Black
@@ -30,7 +30,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install System Python
@@ -50,11 +50,11 @@ jobs:
         os: [windows-latest, macos-latest, ubuntu-latest]
     steps:
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
       - name: Install Testing Requirements
@@ -75,7 +75,7 @@ jobs:
         python-version: ['3.8']
         env: [test]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
@@ -141,7 +141,7 @@ jobs:
     steps:
       - name: Install Git and System Python
         run: yum install -y git python3-devel python3-pip python3
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
@@ -156,7 +156,7 @@ jobs:
     steps:
       - name: Install Git and Python 3.8 from AppStream
         run: yum install -y git python38-devel python38-pip python38-pip-wheel python38
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
@@ -171,7 +171,7 @@ jobs:
     steps:
       - name: Install Git and Python 3.9 from AppStream
         run: yum install -y git python39-devel python39-pip python39-pip-wheel python39
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
@@ -221,7 +221,7 @@ jobs:
       - name: Install wheel package (MSYS)
         if: matrix.msystem == 'MSYS'
         run: pip install --no-build-isolation wheel
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install package
@@ -254,7 +254,7 @@ jobs:
         run: |
           apk add python3 python3-dev py3-pip git
       - name: Download Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
@@ -272,7 +272,7 @@ jobs:
         run: |
           brew install python git
       - name: Download Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
@@ -293,7 +293,7 @@ jobs:
         run: |
           pacman --noconfirm -Sy python python-pip git
       - name: Download Source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
