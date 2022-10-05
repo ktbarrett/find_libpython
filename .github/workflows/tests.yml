@@ -160,9 +160,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
-        run: python3 -m pip install nox
+        run: python3.8 -m pip install nox
       - name: Run Tests
-        run: python3 -m nox -e tests
+        run: python3.8 -m nox -e tests
 
   rhel8-appstream-py39:
     name: rhel8-appstream-py39
@@ -175,9 +175,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Testing Requirements
-        run: python3 -m pip install nox
+        run: python3.9 -m pip install nox
       - name: Run Tests
-        run: python3 -m nox -e tests
+        run: python3.9 -m nox -e tests
 
   rhel9-system-python:
     name: rhel9-system-python
