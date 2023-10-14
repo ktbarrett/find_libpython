@@ -26,14 +26,14 @@ Locate libpython associated with this Python executable.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from logging import getLogger as _getLogger
-from sysconfig import get_config_var as _get_config_var
-from ctypes.util import find_library as _find_library
 import ctypes
 import os
 import sys
+from ctypes.util import find_library as _find_library
+from logging import getLogger as _getLogger
+from sysconfig import get_config_var as _get_config_var
 
-from find_libpython._version import version as __version__  # noqa: F401
+from find_libpython._version import __version__  # noqa: F401
 
 _logger = _getLogger("find_libpython")
 
@@ -190,7 +190,6 @@ def candidate_names(suffix=_SHLIB_SUFFIX):
 
 
 def _linked_pythondll() -> str:
-
     # On Windows there is the `sys.dllhandle` attribute which is the
     # DLL Handle ID for the associated python.dll for the installation.
     # We can use the GetModuleFileName function to get the path to the
