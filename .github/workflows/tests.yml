@@ -64,7 +64,7 @@ jobs:
         run: python -m nox -e tests
 
   anaconda:
-    name: ${{ matrix.os }}-anaconda-${{ matrix.env }}
+    name: ${{ matrix.os }}-anaconda
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -73,28 +73,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.8']
-        env: [test]
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
-        if: matrix.env == 'base'
         with:
-          # using the base env is a bit different
-          # cannot specify python-version,
-          # must have activate-environment: ''
           auto-update-conda: true
           auto-activate-base: true
           activate-environment: ''
-      - uses: conda-incubator/setup-miniconda@v2
-        if: matrix.env != 'base'
-        with:
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-          auto-update-conda: true
-          activate-environment: ${{ matrix.env }}
       - name: Install Testing Requirements
         run: python -m pip install nox
       - name: Run Tests
