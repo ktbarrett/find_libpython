@@ -38,9 +38,9 @@ from find_libpython._version import __version__  # noqa: F401
 _logger = _getLogger("find_libpython")
 
 _is_apple = sys.platform == "darwin"
-_is_msys = sys.platform == "msys"
+_is_cygwin = sys.platform in ("msys", "cygwin")
 _is_mingw = sys.platform == "mingw"
-_is_windows = os.name == "nt" and not _is_mingw and not _is_msys
+_is_windows = os.name == "nt" and not _is_mingw and not _is_cygwin
 _is_posix = os.name == "posix"
 
 _SHLIB_SUFFIX = _get_config_var("_SHLIB_SUFFIX")
@@ -167,7 +167,7 @@ def candidate_names(suffix=_SHLIB_SUFFIX):
 
     if _is_mingw:
         dlprefix = "lib"
-    elif _is_windows or _is_msys:
+    elif _is_windows or _is_cygwin:
         dlprefix = ""
     else:
         dlprefix = "lib"
@@ -245,7 +245,7 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
     #
     # But we try other places just in case.
 
-    if _is_windows or _is_msys or _is_mingw:
+    if _is_windows or _is_cygwin or _is_mingw:
         lib_dirs.append(os.path.join(os.path.dirname(sys.executable)))
     else:
         lib_dirs.append(
@@ -260,7 +260,7 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
 
     lib_basenames = list(candidate_names(suffix=suffix))
 
-    if _is_posix and not _is_msys:
+    if _is_posix and not _is_cygwin:
         for basename in lib_basenames:
             try:
                 libpython = ctypes.CDLL(basename)
@@ -345,7 +345,7 @@ def _finding_libpython():
     _logger.debug("_is_windows = %s", _is_windows)
     _logger.debug("_is_apple = %s", _is_apple)
     _logger.debug("_is_mingw = %s", _is_mingw)
-    _logger.debug("_is_msys = %s", _is_msys)
+    _logger.debug("_is_msys = %s", _is_cygwin)
     _logger.debug("_is_posix = %s", _is_posix)
     for path in candidate_paths():
         _logger.debug("Candidate: %s", path)
