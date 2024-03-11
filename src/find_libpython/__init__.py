@@ -342,11 +342,6 @@ def _finding_libpython():
     path : str
         Existing path to a libpython.
     """
-    _logger.debug("_is_windows = %s", _is_windows)
-    _logger.debug("_is_apple = %s", _is_apple)
-    _logger.debug("_is_mingw = %s", _is_mingw)
-    _logger.debug("_is_msys = %s", _is_cygwin)
-    _logger.debug("_is_posix = %s", _is_posix)
     for path in candidate_paths():
         _logger.debug("Candidate: %s", path)
         normalized = _normalize_path(path)
@@ -391,11 +386,21 @@ def _cli_find_libpython(cli_op, verbose):
         _print_all(candidate_names())
     elif cli_op == "candidate-paths":
         _print_all(p for p in candidate_paths() if p and os.path.isabs(p))
+    elif cli_op == "platform-info":
+        _log_platform_info()
     else:
         path = find_libpython()
         if path is None:
             return 1
         print(path, end="")
+
+
+def _log_platform_info():
+    _logger.debug("_is_windows = %s", _is_windows)
+    _logger.debug("_is_apple = %s", _is_apple)
+    _logger.debug("_is_mingw = %s", _is_mingw)
+    _logger.debug("_is_msys = %s", _is_cygwin)
+    _logger.debug("_is_posix = %s", _is_posix)
 
 
 def main(args=None):
@@ -431,6 +436,13 @@ def main(args=None):
         dest="cli_op",
         const="candidate-paths",
         help="Print list of candidate paths of libpython.",
+    )
+    group.add_argument(
+        "--platform-info",
+        action="store_const",
+        dest="cli_op",
+        const="platform-info",
+        help="Print information about the platform and exit.",
     )
 
     ns = parser.parse_args(args)
