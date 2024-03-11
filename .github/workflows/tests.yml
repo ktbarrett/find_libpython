@@ -180,7 +180,7 @@ jobs:
         msystem:
           # MSYS tests are failing, disable them.
           # See also https://github.com/ktbarrett/find_libpython/issues/39
-          #- MSYS
+          - MSYS
           - MINGW64
     steps:
       - name: Install msys2 (MINGW64)
