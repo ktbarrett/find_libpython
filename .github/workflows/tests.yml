@@ -3,8 +3,6 @@ name: Tests
 on:
   schedule:
     - cron: "10 16 * * 3"
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -20,8 +18,6 @@ jobs:
         os: [ubuntu-20.04, ubuntu-22.04]
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install System Python
         run: |
           sudo apt install python3-dev python3-pip
@@ -45,8 +41,6 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install Python
         uses: actions/setup-python@v4
         with:
@@ -73,8 +67,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
@@ -90,36 +82,14 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
-  # Note on all container jobs using actions/checkout: Install git 2.18 or
-  # higher before using the checkout action!
-  #
-  # find_libpython uses setuptools_scm, which mandates installing from a git
-  # repository with history present. The actions/checkout GitHub action
-  # preserves that history if "fetch-depth: 0" is passed as option, *and* if the
-  # git command-line tool is used for the checkout. If 'git' is not present or
-  # too old when using actions/checkout then the action falls back to the
-  # GitHub REST API to download the repository. The data obtained in this way
-  # does not provide sufficient information for setuptools_scm to work, and it
-  # fails with "setuptools-scm was unable to detect version".
-
   rhel7:
     name: rhel7-system-python
     runs-on: ubuntu-latest
     container: "centos:7"
     steps:
-      - name: Make Git 2.18+ available, required for actions/checkout
-        run: yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm
-      - name: Install Git and System Python
-        run: yum install -y git python3-devel python3-pip python3
+      - name: Install System Python and Git
+        run: yum install -y python3-devel python3-pip python3 git
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      # The checkout action does roughly the same thing (using an explicit
-      # path), but that somehow does not work. Explicitly mark all git
-      # directories as safe to use, otherwise git when used in setuptools_scm
-      # fails when installing the Python package.
-      - name: Mark git checkout as safe to use
-        run: git config --global safe.directory '*'
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -131,11 +101,9 @@ jobs:
     runs-on: ubuntu-latest
     container: "almalinux:8"
     steps:
-      - name: Install Git and System Python
-        run: yum install -y git python3-devel python3-pip python3
+      - name: Install System Python and Git
+        run: yum install -y python3-devel python3-pip python3 git
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -151,11 +119,9 @@ jobs:
     runs-on: ubuntu-latest
     container: "almalinux:8"
     steps:
-      - name: Install Git and Python 3.8 from AppStream
-        run: yum install -y git python38-devel python38-pip python38-pip-wheel python38
+      - name: Install Python 3.8 and Git from AppStream
+        run: yum install -y python38-devel python38-pip python38-pip-wheel python38 git
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install Testing Requirements
         run: python3.8 -m pip install nox
       - name: Run Tests
@@ -171,11 +137,9 @@ jobs:
     runs-on: ubuntu-latest
     container: "almalinux:8"
     steps:
-      - name: Install Git and Python 3.9 from AppStream
-        run: yum install -y git python39-devel python39-pip python39-pip-wheel python39
+      - name: Install Python 3.9 and Git from AppStream
+        run: yum install -y python39-devel python39-pip python39-pip-wheel python39 git
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install Testing Requirements
         run: python3.9 -m pip install nox
       - name: Run Tests
@@ -191,11 +155,9 @@ jobs:
     runs-on: ubuntu-latest
     container: "almalinux:9"
     steps:
-      - name: Install Git and System Python
-        run: yum install -y git python3-devel python3-pip python3
+      - name: Install System Python and Git
+        run: yum install -y python3-devel python3-pip python3 git
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -227,13 +189,11 @@ jobs:
         with:
           msystem: MINGW64
           install: >-
-            git
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-python
             mingw-w64-x86_64-python-pip
             mingw-w64-x86_64-python-setuptools
             mingw-w64-x86_64-python-wheel
-            mingw-w64-x86_64-python-setuptools-scm
           update: true
       - name: Install msys2 (MSYS)
         if: matrix.msystem == 'MSYS'
@@ -247,14 +207,11 @@ jobs:
             python-devel
             python-pip
             python-setuptools
-            python-setuptools-scm
           update: true
       - name: Install wheel package (MSYS)
         if: matrix.msystem == 'MSYS'
         run: pip install --no-build-isolation wheel
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install package
         run: pip install --no-build-isolation .
       - name: Print libpython
@@ -286,13 +243,11 @@ jobs:
         run: |
           apk update
           apk upgrade
-      - name: Install Python and Git
+      - name: Install System Python and Git
         run: |
-          apk add python3 python3-dev py3-pip git py3-nox
+          apk add python3 python3-dev py3-pip py3-nox git
       - name: Download Source
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Run Tests
         run: |
           nox -e tests
@@ -306,13 +261,11 @@ jobs:
     name: homebrew-system-python
     runs-on: macos-latest
     steps:
-      - name: Install Python and Git
+      - name: Install System Python and Git
         run: |
           brew install python git
       - name: Download Source
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Install Testing Requirements
         run: |
           python3 -m pip install nox
@@ -332,13 +285,11 @@ jobs:
       image: archlinux
       options: --privileged
     steps:
-      - name: Install Python and Git
+      - name: Install System Python and Git
         run: |
           pacman --noconfirm -Sy python python-pip git
       - name: Download Source
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: Create and activate environment
         run: |
           python -m venv .venv
