@@ -177,7 +177,7 @@ def candidate_names(suffix=_SHLIB_SUFFIX):
         # VERSION is X.Y in Linux/macOS and XY in Windows:
         VERSION=(
             _get_config_var("VERSION")
-            or "{v.major}.{v.minor}".format(v=sys.version_info)
+            or f"{sys.version_info.major}.{sys.version_info.minor}"
         ),
         ABIFLAGS=(_get_config_var("ABIFLAGS") or _get_config_var("abiflags") or ""),
     )
@@ -407,7 +407,7 @@ def main(args=None):
     )
 
     parser.add_argument(
-        "--version", action="version", version="find_libpython {}".format(__version__)
+        "--version", action="version", version=f"find_libpython {__version__}"
     )
 
     group = parser.add_mutually_exclusive_group()

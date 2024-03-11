@@ -1,6 +1,6 @@
-import nox
 import os.path
 
+import nox
 
 test_reqs = ["pytest", "pytest-cov"]
 
@@ -9,7 +9,6 @@ pytest_cov_args = ["--cov=find_libpython", "--cov-branch"]
 
 @nox.session
 def tests(session):
-
     # install current module and runtime dependencies
     session.install(".")
 
