@@ -228,6 +228,7 @@ jobs:
         run: |
           pytest --cov --cov-branch tests/
           pytest --cov --cov-branch --cov-append --doctest-modules $(python -c 'import find_libpython; print(find_libpython.__file__)')
+          coverage xml -o coverage.xml
       - name: Upload to codecov
         uses: codecov/codecov-action@v4
         with:
@@ -251,11 +252,11 @@ jobs:
       - name: Run Tests
         run: |
           nox -e tests
-      - name: Upload to codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+      # - name: Upload to codecov
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     verbose: true
 
   homebrew:
     name: homebrew-system-python
