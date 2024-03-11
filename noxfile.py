@@ -12,13 +12,17 @@ def tests(session):
     # install current module and runtime dependencies
     session.install(".")
 
-    # print info
-    session.run("python", "-m", "find_libpython", "--candidate-names")
-    session.run("python", "-m", "find_libpython", "--candidate-paths")
-    session.run("python", "-m", "find_libpython", "-v")
-
     # install testing dependencies
     session.install(*test_reqs)
+
+    # print info
+    session.run(
+        "python", "-m", "coverage", "run", "-m", "find_libpython", "--candidate-names"
+    )
+    session.run(
+        "python", "-m", "coverage", "run", "-m", "find_libpython", "--candidate-paths"
+    )
+    session.run("python", "-m", "coverage", "run", "-m", "find_libpython", "-v")
 
     # run pytest
     install_loc = session.run(
@@ -32,4 +36,6 @@ def tests(session):
     session.run(
         "pytest", *pytest_cov_args, "--cov-append", "--doctest-modules", install_loc
     )
+
+    # create coverage report for upload
     session.run("coverage", "xml", "-o", coverage_file)
