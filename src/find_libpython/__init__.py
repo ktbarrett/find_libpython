@@ -131,6 +131,19 @@ def _uniquified(func):
     return wrapper
 
 
+def _get_proc_library():
+    pid = os.getpid()
+    path = f"/proc/{pid}/maps"
+    lines = open(path).readlines()
+
+    for line in lines:
+        path = line.split(" ", 5)[5].strip()
+        if "libpython" in os.path.basename(path):
+            if not os.path.isfile(path):
+                continue
+            yield path
+
+
 @_uniquified
 def candidate_names(suffix=_SHLIB_SUFFIX):
     """
@@ -269,6 +282,11 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
             else:
                 yield _linked_libpython_unix(libpython)
 
+        try:
+            yield from _get_proc_library()
+        except OSError:
+            _logger.debug("Unable to check /proc filesystem for libpython")
+
     for directory in lib_dirs:
         for basename in lib_basenames:
             yield os.path.join(directory, basename)
@@ -301,9 +319,9 @@ def _normalize_path(path, suffix=_SHLIB_SUFFIX, _is_apple=_is_apple):
         return None
     if not os.path.isabs(path):
         return None
-    if os.path.exists(path):
+    if os.path.isfile(path):
         return os.path.realpath(path)
-    if os.path.exists(path + suffix):
+    if os.path.isfile(path + suffix):
         return os.path.realpath(path + suffix)
     if _is_apple:
         return _normalize_path(
