@@ -1,6 +1,7 @@
-from find_libpython import find_libpython
 import ctypes
 import sys
+
+from find_libpython import find_libpython
 
 
 def test_find_libpython():
