@@ -2,9 +2,9 @@ import os.path
 
 import nox
 
-test_reqs = ["pytest", "pytest-cov"]
-
+test_reqs = ["pytest", "pytest-cov", "coverage"]
 pytest_cov_args = ["--cov=find_libpython", "--cov-branch"]
+coverage_file = "coverage.xml"
 
 
 @nox.session
@@ -32,3 +32,4 @@ def tests(session):
     session.run(
         "pytest", *pytest_cov_args, "--cov-append", "--doctest-modules", install_loc
     )
+    session.run("coverage", "xml", "-o", coverage_file)

@@ -29,6 +29,11 @@ jobs:
         run: python3 -m pip install nox
       - name: Run Tests
         run: python3 -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   setup-python:
     name: ${{ matrix.os }}-setup-python
@@ -50,6 +55,11 @@ jobs:
         run: python -m pip install nox
       - name: Run tests
         run: python -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   anaconda:
     name: ${{ matrix.os }}-anaconda
@@ -74,6 +84,11 @@ jobs:
         run: python -m pip install nox
       - name: Run Tests
         run: python -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   # Note on all container jobs using actions/checkout: Install git 2.18 or
   # higher before using the checkout action!
@@ -109,6 +124,7 @@ jobs:
         run: python3 -m pip install nox
       - name: Run Tests
         run: python3 -m nox -e tests
+      # we don't upload coverage here because codecov's uploader doesn't support OS's this old
 
   rhel8-system-python:
     name: rhel8-system-python
@@ -124,6 +140,11 @@ jobs:
         run: python3 -m pip install nox
       - name: Run Tests
         run: python3 -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   rhel8-appstream-py38:
     name: rhel8-appstream-py38
@@ -139,6 +160,11 @@ jobs:
         run: python3.8 -m pip install nox
       - name: Run Tests
         run: python3.8 -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   rhel8-appstream-py39:
     name: rhel8-appstream-py39
@@ -154,6 +180,11 @@ jobs:
         run: python3.9 -m pip install nox
       - name: Run Tests
         run: python3.9 -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   rhel9-system-python:
     name: rhel9-system-python
@@ -169,6 +200,11 @@ jobs:
         run: python3 -m pip install nox
       - name: Run Tests
         run: python3 -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   msys:
     name: ${{ matrix.msystem }}-system-python
@@ -235,6 +271,11 @@ jobs:
         run: |
           pytest --cov --cov-branch tests/
           pytest --cov --cov-branch --cov-append --doctest-modules $(python -c 'import find_libpython; print(find_libpython.__file__)')
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   alpine:
     name: alpine-system-python
@@ -255,6 +296,11 @@ jobs:
       - name: Run Tests
         run: |
           nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   homebrew:
     name: homebrew-system-python
@@ -273,6 +319,11 @@ jobs:
       - name: Run Tests
         run: |
           python3 -m nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   archlinux:
     name: archlinux-system-python
@@ -299,3 +350,8 @@ jobs:
       - name: Run Tests
         run: |
           nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
