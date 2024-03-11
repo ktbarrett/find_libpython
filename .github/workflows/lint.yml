@@ -1,0 +1,21 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint-pre-commit:
+    runs-on: ubuntu-latest
+    name: Run pre-commit
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Run pre-commit
+      run: |
+        pip install pre-commit
+        pre-commit run -a --show-diff-on-failure
