@@ -17,10 +17,34 @@ def tests(session):
 
     # print info
     session.run(
-        "python", "-m", "coverage", "run", "-m", "find_libpython", "--candidate-names"
+        "python",
+        "-m",
+        "coverage",
+        "run",
+        "-m",
+        "find_libpython",
+        "-v",
+        "--platform-info",
     )
     session.run(
-        "python", "-m", "coverage", "run", "-m", "find_libpython", "--candidate-paths"
+        "python",
+        "-m",
+        "coverage",
+        "run",
+        "-m",
+        "find_libpython",
+        "-v",
+        "--candidate-names",
+    )
+    session.run(
+        "python",
+        "-m",
+        "coverage",
+        "run",
+        "-m",
+        "find_libpython",
+        "-v",
+        "--candidate-paths",
     )
     session.run("python", "-m", "coverage", "run", "-m", "find_libpython", "-v")
 
