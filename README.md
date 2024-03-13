@@ -25,16 +25,18 @@ In that case the recommended usage is to simply call the script in a subprocess 
 The full help message:
 ```
 > find_libpython --help
-usage: find_libpython [-h] [--verbose] [--list-all | --candidate-names | --candidate-paths]
+usage: find_libpython [-h] [-v] [--list-all | --candidate-names | --candidate-paths | --platform-info | --version]
 
 Locate libpython associated with this Python executable.
 
-optional arguments:
+options:
   -h, --help         show this help message and exit
-  --verbose, -v      Print debugging information.
+  -v, --verbose      Print debugging information.
   --list-all         Print list of all paths found.
   --candidate-names  Print list of candidate names of libpython.
   --candidate-paths  Print list of candidate paths of libpython.
+  --platform-info    Print information about the platform and exit.
+  --version          show program's version number and exit
 ```
 
 Usage as a library might occur when you need to obtain the path to the library in a Python-based build system like distutils.
