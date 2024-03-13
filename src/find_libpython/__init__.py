@@ -426,11 +426,7 @@ def main(args=None):
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Print debugging information."
-    )
-
-    parser.add_argument(
-        "--version", action="version", version=f"find_libpython {__version__}"
+        "-v", "--verbose", action="store_true", help="Print debugging information."
     )
 
     group = parser.add_mutually_exclusive_group()
@@ -461,6 +457,9 @@ def main(args=None):
         dest="cli_op",
         const="platform-info",
         help="Print information about the platform and exit.",
+    )
+    group.add_argument(
+        "--version", action="version", version=f"find_libpython {__version__}"
     )
 
     ns = parser.parse_args(args)
