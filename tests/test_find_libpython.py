@@ -2,6 +2,7 @@ import ctypes
 import sys
 
 import pytest
+
 from find_libpython import (
     _get_proc_library,
     _is_cygwin,
