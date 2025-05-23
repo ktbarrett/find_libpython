@@ -1,22 +1,38 @@
-
-
 repos:
+
+- repo: "https://github.com/pre-commit/pre-commit-hooks"
+  rev: v5.0.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+    args:
+      - --fix=lf
+  - id: fix-byte-order-marker
+  - id: check-merge-conflict
+
+- repo: https://github.com/henryiii/validate-pyproject-schema-store
+  rev: "2025.04.28"
+  hooks:
+    - id: validate-pyproject
+
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.4.1
+  hooks:
+  - id: codespell
+    additional_dependencies:
+    - tomli
+
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: "v0.11.10"
+  rev: v0.11.10
   hooks:
     # Run the linter.
-    - id: "ruff"
+    - id: ruff-check
       args:
-      - "--fix"
-      - "--exit-non-zero-on-fix"
+      - --fix
+      - --exit-non-zero-on-fix
     # Run the formatter.
     - id: ruff-format
 
-- repo: "https://github.com/pre-commit/pre-commit-hooks"
-  rev: "v5.0.0"
-  hooks:
-  - id: "trailing-whitespace"
-  - id: "mixed-line-ending"
-    args:
-    - "--fix=lf"
-  - id: "end-of-file-fixer"
+ci:
+  autofix_prs: false

@@ -312,7 +312,7 @@ def _normalize_path(path, suffix=_SHLIB_SUFFIX, _is_apple=_is_apple):
 
     Parameters
     ----------
-    path : str ot None
+    path : str or None
         A candidate path to a shared library.
     """
     if not path:
