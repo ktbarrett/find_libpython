@@ -15,12 +15,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install System Python
         run: |
-          sudo apt install python3-dev python3-pip
+          sudo apt install python3-dev python3-pip python3-venv
+      - name: Build venv
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          echo PATH=$PATH >> $GITHUB_ENV
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -40,9 +45,9 @@ jobs:
         os: [windows-latest, macos-latest, ubuntu-latest]
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
       - name: Install Testing Requirements
@@ -66,8 +71,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           auto-activate-base: true
@@ -82,20 +87,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
-  rhel7:
-    name: rhel7-system-python
-    runs-on: ubuntu-latest
-    container: "centos:7"
-    steps:
-      - name: Install System Python and Git
-        run: yum install -y python3-devel python3-pip python3 git
-      - uses: actions/checkout@v3
-      - name: Install Testing Requirements
-        run: python3 -m pip install nox
-      - name: Run Tests
-        run: python3 -m nox -e tests
-      # we don't upload coverage here because codecov's uploader doesn't support OS's this old
-
   rhel8-system-python:
     name: rhel8-system-python
     runs-on: ubuntu-latest
@@ -103,7 +94,7 @@ jobs:
     steps:
       - name: Install System Python and Git
         run: yum install -y python3-devel python3-pip python3 git
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -121,7 +112,7 @@ jobs:
     steps:
       - name: Install Python 3.8 and Git from AppStream
         run: yum install -y python38-devel python38-pip python38-pip-wheel python38 git
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Testing Requirements
         run: python3.8 -m pip install nox
       - name: Run Tests
@@ -139,7 +130,7 @@ jobs:
     steps:
       - name: Install Python 3.9 and Git from AppStream
         run: yum install -y python39-devel python39-pip python39-pip-wheel python39 git
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Testing Requirements
         run: python3.9 -m pip install nox
       - name: Run Tests
@@ -157,7 +148,7 @@ jobs:
     steps:
       - name: Install System Python and Git
         run: yum install -y python3-devel python3-pip python3 git
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -188,10 +179,9 @@ jobs:
           msystem: MINGW64
           install: >-
             mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-gnupg
             mingw-w64-x86_64-python
             mingw-w64-x86_64-python-pip
-            mingw-w64-x86_64-python-setuptools
-            mingw-w64-x86_64-python-wheel
           update: true
       - name: Install msys2 (MSYS)
         if: matrix.msystem == 'MSYS'
@@ -200,20 +190,22 @@ jobs:
           msystem: MSYS
           install: >-
             msys2-devel
-            git
+            gnupg
             python
-            python-devel
             python-pip
-            python-setuptools
+            python-devel
           update: true
-      - name: Install wheel package (MSYS)
-        if: matrix.msystem == 'MSYS'
-        run: pip install --no-build-isolation wheel
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Build venv
+        run: |
+          python -m venv .venv
       - name: Install package
-        run: pip install --no-build-isolation .
+        run: |
+          . .venv/bin/activate
+          pip install .
       - name: Print libpython
         run: |
+          . .venv/bin/activate
           echo 'NAMES'
           find_libpython -v --candidate-names
           echo 'PATHS'
@@ -221,9 +213,12 @@ jobs:
           echo 'LOCATION'
           find_libpython -v
       - name: Install Testing Requirements
-        run: pip install --no-build-isolation pytest pytest-cov
+        run: |
+          . .venv/bin/activate
+          pip install pytest pytest-cov coverage
       - name: Run Tests
         run: |
+          . .venv/bin/activate
           pytest --cov --cov-branch tests/
           pytest --cov --cov-branch --cov-append --doctest-modules $(python -c 'import find_libpython; print(find_libpython.__file__)')
           coverage xml -o coverage.xml
@@ -246,7 +241,7 @@ jobs:
         run: |
           apk add python3 python3-dev py3-pip py3-nox git
       - name: Download Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run Tests
         run: |
           nox -e tests
@@ -264,7 +259,12 @@ jobs:
         run: |
           brew install python git
       - name: Download Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      - name: Build venv
+        run: |
+          python3 -m venv .venv
+          . .venv/bin/activate
+          echo PATH=$PATH >> $GITHUB_ENV
       - name: Install Testing Requirements
         run: |
           python3 -m pip install nox
@@ -288,7 +288,7 @@ jobs:
         run: |
           pacman --noconfirm -Sy python python-pip git
       - name: Download Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Create and activate environment
         run: |
           python -m venv .venv
