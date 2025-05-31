@@ -10,7 +10,7 @@ coverage_file = "coverage.xml"
 @nox.session
 def tests(session):
     # install current module and runtime dependencies
-    session.install(".")
+    session.install("-e", ".")
 
     # install testing dependencies
     session.install(*test_reqs)
