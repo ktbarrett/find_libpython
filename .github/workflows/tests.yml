@@ -170,58 +170,26 @@ jobs:
       matrix:
         msystem:
           - MSYS
+          - MINGW32
           - MINGW64
+          - UCRT64
     steps:
-      - name: Install msys2 (MINGW64)
-        if: matrix.msystem == 'MINGW64'
+      - name: Install msys2
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
-          install: >-
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-gnupg
-            mingw-w64-x86_64-python
-            mingw-w64-x86_64-python-pip
-          update: true
-      - name: Install msys2 (MSYS)
-        if: matrix.msystem == 'MSYS'
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MSYS
-          install: >-
-            msys2-devel
+          msystem: ${{ matrix.msystem }}
+          pacboy: >-
             gnupg
-            python
-            python-pip
-            python-devel
+            python:p
+            python-pip:p
           update: true
       - uses: actions/checkout@v4
-      - name: Build venv
+      - name: Run tests
         run: |
           python -m venv .venv
-      - name: Install package
-        run: |
           . .venv/bin/activate
-          pip install .
-      - name: Print libpython
-        run: |
-          . .venv/bin/activate
-          echo 'NAMES'
-          find_libpython -v --candidate-names
-          echo 'PATHS'
-          find_libpython -v --candidate-paths
-          echo 'LOCATION'
-          find_libpython -v
-      - name: Install Testing Requirements
-        run: |
-          . .venv/bin/activate
-          pip install pytest pytest-cov coverage
-      - name: Run Tests
-        run: |
-          . .venv/bin/activate
-          pytest --cov --cov-branch tests/
-          pytest --cov --cov-branch --cov-append --doctest-modules $(python -c 'import find_libpython; print(find_libpython.__file__)')
-          coverage xml -o coverage.xml
+          pip install nox
+          nox -e tests
       - name: Upload to codecov
         uses: codecov/codecov-action@v4
         with:
