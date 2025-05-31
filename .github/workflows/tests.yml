@@ -178,8 +178,7 @@ jobs:
         with:
           msystem: MINGW64
           install: >-
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-gnupg
+            gnupg
             mingw-w64-x86_64-python
             mingw-w64-x86_64-python-pip
           update: true
@@ -189,11 +188,21 @@ jobs:
         with:
           msystem: MSYS
           install: >-
-            msys2-devel
             gnupg
             python
             python-pip
             python-devel
+          update: true
+          update: true
+      - name: Install msys2 (UCRT64)
+        if: matrix.msystem == 'UCRT64'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          install: >-
+            gnupg
+            mingw-w64-ucrt-x86_64-python
+            mingw-w64-ucrt-x86_64-python-pip
           update: true
       - uses: actions/checkout@v4
       - name: Build venv
