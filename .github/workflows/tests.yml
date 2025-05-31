@@ -239,17 +239,17 @@ jobs:
           apk upgrade
       - name: Install System Python and Git
         run: |
-          apk add python3 python3-dev py3-pip py3-nox git
+          apk add python3 python3-dev py3-pip py3-nox py3-attrs git
       - name: Download Source
         uses: actions/checkout@v4
       - name: Run Tests
         run: |
           nox -e tests
-      # - name: Upload to codecov
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     verbose: true
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   homebrew:
     name: homebrew-system-python
