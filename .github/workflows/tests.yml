@@ -214,7 +214,7 @@ jobs:
         run: |
           nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
