@@ -31,7 +31,7 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -55,7 +55,7 @@ jobs:
       - name: Run tests
         run: python -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -82,7 +82,7 @@ jobs:
       - name: Run Tests
         run: python -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -100,7 +100,7 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -118,7 +118,7 @@ jobs:
       - name: Run Tests
         run: python3.8 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -136,7 +136,7 @@ jobs:
       - name: Run Tests
         run: python3.9 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -154,7 +154,7 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -191,7 +191,7 @@ jobs:
           pip install nox
           nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -240,7 +240,7 @@ jobs:
         run: |
           python3 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
@@ -269,7 +269,7 @@ jobs:
         run: |
           nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
