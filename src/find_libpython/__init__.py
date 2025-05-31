@@ -251,6 +251,9 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
     _append_truthy(lib_dirs, _get_config_var("LIBPL"))
     _append_truthy(lib_dirs, _get_config_var("srcdir"))
     _append_truthy(lib_dirs, _get_config_var("LIBDIR"))
+    if _is_windows or _is_mingw or _is_cygwin:
+        # On Windows DLLs go in bin/ while static libraries go in lib/
+        _append_truthy(lib_dirs, _get_config_var("BINDIR"))
 
     # LIBPL seems to be the right config_var to use.  It is the one
     # used in python-config when shared library is not enabled:
@@ -414,11 +417,11 @@ def _cli_find_libpython(cli_op, verbose):
 
 
 def _log_platform_info():
-    _logger.debug("_is_windows = %s", _is_windows)
-    _logger.debug("_is_apple = %s", _is_apple)
-    _logger.debug("_is_mingw = %s", _is_mingw)
-    _logger.debug("_is_msys = %s", _is_cygwin)
-    _logger.debug("_is_posix = %s", _is_posix)
+    print(f"is_windows = {_is_windows}")
+    print(f"is_apple = {_is_apple}")
+    print(f"is_mingw = {_is_mingw}")
+    print(f"is_msys = {_is_cygwin}")
+    print(f"is_posix = {_is_posix}")
 
 
 def main(args=None):
