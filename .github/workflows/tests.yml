@@ -36,7 +36,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   setup-python:
     name: ${{ matrix.os }}-setup-python
@@ -60,7 +60,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   anaconda:
     name: ${{ matrix.os }}-anaconda
@@ -87,7 +87,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   rhel8-system-python:
     name: rhel8-system-python
@@ -105,7 +105,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   rhel8-appstream-py38:
     name: rhel8-appstream-py38
@@ -123,7 +123,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   rhel8-appstream-py39:
     name: rhel8-appstream-py39
@@ -141,7 +141,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   rhel9-system-python:
     name: rhel9-system-python
@@ -159,7 +159,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   msys:
     name: ${{ matrix.msystem }}-system-python
@@ -196,7 +196,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   alpine:
     name: alpine-system-python
@@ -220,7 +220,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   homebrew:
     name: homebrew-system-python
@@ -246,7 +246,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
   archlinux:
     name: archlinux-system-python
@@ -275,7 +275,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+          fail_ci_if_error: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
