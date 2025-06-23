@@ -26,16 +26,18 @@ Locate libpython associated with this Python executable.
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import argparse
 import ctypes
+import logging
 import os
 import sys
 from ctypes.util import find_library as _find_library
-from logging import getLogger as _getLogger
+from functools import wraps
 from sysconfig import get_config_var as _get_config_var
 
 from find_libpython._version import __version__  # noqa: F401
 
-_logger = _getLogger("find_libpython")
+_logger = logging.getLogger("find_libpython")
 
 _is_apple = sys.platform == "darwin"
 _is_cygwin = sys.platform in ("msys", "cygwin")
@@ -122,7 +124,6 @@ def _uniquifying(items):
 
 def _uniquified(func):
     """Wrap iterator returned from `func` by `_uniquifying`."""
-    from functools import wraps
 
     @wraps(func)
     def wrapper(*args, **kwds):
@@ -392,8 +393,6 @@ def _print_all(items):
 
 
 def _cli_find_libpython(cli_op, verbose):
-    import logging
-
     # Importing `logging` module here so that using `logging.debug`
     # instead of `_logger.debug` outside of this function becomes an
     # error.
@@ -425,8 +424,6 @@ def _log_platform_info():
 
 
 def main(args=None):
-    import argparse
-
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Print debugging information."
