@@ -202,6 +202,9 @@ jobs:
     name: alpine-system-python
     runs-on: ubuntu-latest
     container: "alpine:latest"
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Update Packages
         run: |
