@@ -150,7 +150,7 @@ jobs:
     steps:
       - name: Install System Python and Git
         run: yum install -y python3-devel python3-pip python3 git
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
