@@ -150,7 +150,7 @@ jobs:
     steps:
       - name: Install System Python and Git
         run: yum install -y python3-devel python3-pip python3 git
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
       - name: Install Testing Requirements
         run: python3 -m pip install nox
       - name: Run Tests
@@ -202,9 +202,6 @@ jobs:
     name: alpine-system-python
     runs-on: ubuntu-latest
     container: "alpine:latest"
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Update Packages
         run: |
