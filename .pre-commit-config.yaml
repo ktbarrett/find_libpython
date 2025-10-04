@@ -34,5 +34,10 @@ repos:
     # Run the formatter.
     - id: ruff-format
 
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.18.2
+  hooks:
+  - id: mypy
+
 ci:
   autofix_prs: false
