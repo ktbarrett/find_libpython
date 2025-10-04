@@ -1,6 +1,36 @@
 [build-system]
-requires = ["setuptools>=43", "wheel"]
+requires = ["setuptools>=61.2"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "find_libpython"
+authors = [{name = "Takafumi Arakaki"}]
+maintainers = [{name = "Kaleb Barrett", email = "dev.ktbarrett@gmail.com"}]
+license = {text = "MIT"}
+description = "Finds the libpython associated with your environment, wherever it may be hiding"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://github.com/ktbarrett/find_libpython"
+
+[project.scripts]
+find_libpython = "find_libpython:main"
+
+[tool.setuptools]
+packages = ["find_libpython"]
+package-dir = {"" = "src"}
+include-package-data = false
+
+[tool.setuptools.dynamic]
+version = {attr = "find_libpython.__version__"}
 
 [tool.ruff]
 target-version = "py37"
