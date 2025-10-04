@@ -89,24 +89,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
 
-  rhel8-appstream-py39:
-    name: rhel8-appstream-py39
-    runs-on: ubuntu-latest
-    container: "almalinux:8"
-    steps:
-      - name: Install Python 3.9 and Git from AppStream
-        run: yum install -y python39-devel python39-pip python39-pip-wheel python39 git
-      - uses: actions/checkout@v4
-      - name: Install Testing Requirements
-        run: python3.9 -m pip install nox
-      - name: Run Tests
-        run: python3.9 -m nox -e tests
-      # - name: Upload to codecov
-      #   uses: codecov/codecov-action@v5
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     fail_ci_if_error: true
-
   rhel9-system-python:
     name: rhel9-system-python
     runs-on: ubuntu-latest
