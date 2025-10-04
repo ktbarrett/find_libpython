@@ -97,15 +97,17 @@ jobs:
       - name: Install Python 3.9 and Git from AppStream
         run: yum install -y python39-devel python39-pip python39-pip-wheel python39 git
       - uses: actions/checkout@v4
-      - name: Install Testing Requirements
-        run: python3.9 -m pip install nox
-      - name: Run Tests
-        run: python3.9 -m nox -e tests
-      # - name: Upload to codecov
-      #   uses: codecov/codecov-action@v5
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     fail_ci_if_error: true
+      - name: Test
+        run: |
+          python3.9 -m venv .venv
+          . .venv/bin/activate
+          pip install --upgrade pip nox
+          nox -e tests
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
 
   rhel9-system-python:
     name: rhel9-system-python
