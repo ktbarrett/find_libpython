@@ -6,6 +6,8 @@ test_reqs = ["pytest", "pytest-cov", "coverage"]
 pytest_cov_args = ["--cov=find_libpython", "--cov-branch"]
 coverage_file = "coverage.xml"
 
+nox.options.default_venv_backend = "uv|virtualenv"
+
 
 @nox.session
 def tests(session):
