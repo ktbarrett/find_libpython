@@ -48,3 +48,6 @@ ignore = [
     "E501",  # Line too long
     "PLR0912",  # Too many branches
 ]
+
+[tool.mypy]
+packages = ["find_libpython"]
