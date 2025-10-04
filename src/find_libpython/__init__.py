@@ -25,17 +25,27 @@ Locate libpython associated with this Python executable.
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from __future__ import annotations
 
 import argparse
 import ctypes
 import logging
 import os
 import sys
+from collections.abc import Iterable
 from ctypes.util import find_library as _find_library
 from functools import wraps
 from sysconfig import get_config_var as _get_config_var
+from typing import Any, Callable, TypeVar
 
 from find_libpython._version import __version__  # noqa: F401
+
+if sys.version_info >= (3, 10):
+    from typing import ParamSpec
+
+    P = ParamSpec("P")
+
+T = TypeVar("T")
 
 _logger = logging.getLogger("find_libpython")
 
@@ -57,7 +67,7 @@ if _is_apple:
     _SHLIB_SUFFIX = ".dylib"
 
 
-def _linked_libpython_unix(libpython):
+def _linked_libpython_unix(libpython: Any) -> str | None:
     if not hasattr(libpython, "Py_GetVersion"):
         return None
 
@@ -83,7 +93,9 @@ def _linked_libpython_unix(libpython):
     return os.path.realpath(dlinfo.dli_fname.decode())
 
 
-def _library_name(name, suffix=_SHLIB_SUFFIX, _is_windows=_is_windows):
+def _library_name(
+    name: str, suffix: str = _SHLIB_SUFFIX, _is_windows: bool = _is_windows
+) -> str:
     """
     Convert a file basename `name` to a library name (no "lib" and ".so" etc.)
 
@@ -103,12 +115,12 @@ def _library_name(name, suffix=_SHLIB_SUFFIX, _is_windows=_is_windows):
     return name
 
 
-def _append_truthy(list, item):
+def _append_truthy(list: list[T], item: T) -> None:
     if item:
         list.append(item)
 
 
-def _uniquifying(items):
+def _uniquifying(items: Iterable[str]) -> Iterable[str]:
     """
     Yield items while excluding the duplicates and preserving the order.
 
@@ -122,17 +134,17 @@ def _uniquifying(items):
         seen.add(x)
 
 
-def _uniquified(func):
+def _uniquified(func: Callable[P, Iterable[str]]) -> Callable[P, Iterable[str]]:
     """Wrap iterator returned from `func` by `_uniquifying`."""
 
     @wraps(func)
-    def wrapper(*args, **kwds):
+    def wrapper(*args: P.args, **kwds: P.kwargs) -> Iterable[str]:
         return _uniquifying(func(*args, **kwds))
 
     return wrapper
 
 
-def _get_proc_library():
+def _get_proc_library() -> Iterable[str]:
     pid = os.getpid()
     path = f"/proc/{pid}/maps"
     lines = open(path).readlines()
@@ -146,7 +158,7 @@ def _get_proc_library():
 
 
 @_uniquified
-def candidate_names(suffix=_SHLIB_SUFFIX):
+def candidate_names(suffix: str = _SHLIB_SUFFIX) -> Iterable[str]:
     """
     Iterate over candidate file names of libpython.
 
@@ -203,7 +215,7 @@ def candidate_names(suffix=_SHLIB_SUFFIX):
         yield dlprefix + stem + suffix
 
 
-def _linked_pythondll() -> str:
+def _linked_pythondll() -> str | None:
     # On Windows there is the `sys.dllhandle` attribute which is the
     # DLL Handle ID for the associated python.dll for the installation.
     # We can use the GetModuleFileName function to get the path to the
@@ -211,7 +223,7 @@ def _linked_pythondll() -> str:
 
     # sys.dllhandle is an module ID, which is just a void* cast to an integer,
     # we turn it back into a pointer for the ctypes call
-    dll_hmodule = ctypes.cast(sys.dllhandle, ctypes.c_void_p)
+    dll_hmodule = ctypes.cast(sys.dllhandle, ctypes.c_void_p)  # type: ignore[attr-defined]
 
     # create a buffer for the return path of the maximum length of filepaths in Windows unicode interfaces
     # https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
@@ -219,7 +231,7 @@ def _linked_pythondll() -> str:
 
     # GetModuleFileName sets the return buffer to the value of the path used to load the module.
     # We expect it to always be a normalized absolute path to python.dll.
-    r = ctypes.windll.kernel32.GetModuleFileNameW(
+    r = ctypes.windll.kernel32.GetModuleFileNameW(  # type: ignore[attr-defined]
         dll_hmodule, path_return_buffer, len(path_return_buffer)
     )
 
@@ -233,7 +245,7 @@ def _linked_pythondll() -> str:
 
 
 @_uniquified
-def candidate_paths(suffix=_SHLIB_SUFFIX):
+def candidate_paths(suffix: str = _SHLIB_SUFFIX) -> Iterable[str]:
     """
     Iterate over candidate paths of libpython.
 
@@ -245,10 +257,11 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
     """
 
     if _is_windows:
-        yield _linked_pythondll()
+        if (res := _linked_pythondll()) is not None:
+            yield res
 
     # List candidates for directories in which libpython may exist
-    lib_dirs = []
+    lib_dirs: list[str] = []
     _append_truthy(lib_dirs, _get_config_var("LIBPL"))
     _append_truthy(lib_dirs, _get_config_var("srcdir"))
     _append_truthy(lib_dirs, _get_config_var("LIBDIR"))
@@ -284,7 +297,8 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
             except OSError:
                 pass
             else:
-                yield _linked_libpython_unix(libpython)
+                if (res := _linked_libpython_unix(libpython)) is not None:
+                    yield res
 
         try:
             yield from _get_proc_library()
@@ -297,7 +311,8 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
 
     # In macOS and Windows, ctypes.util.find_library returns a full path:
     for basename in lib_basenames:
-        yield _find_library(_library_name(basename))
+        if (res := _find_library(_library_name(basename))) is not None:
+            yield res
 
 
 # Possibly useful links:
@@ -306,7 +321,9 @@ def candidate_paths(suffix=_SHLIB_SUFFIX):
 # * https://github.com/Valloric/ycmd/pull/519
 
 
-def _normalize_path(path, suffix=_SHLIB_SUFFIX, _is_apple=_is_apple):
+def _normalize_path(
+    path: str, suffix: str = _SHLIB_SUFFIX, _is_apple: bool = _is_apple
+) -> str | None:
     """
     Normalize shared library `path` to a real path.
 
@@ -334,7 +351,7 @@ def _normalize_path(path, suffix=_SHLIB_SUFFIX, _is_apple=_is_apple):
     return None
 
 
-def _remove_suffix_apple(path):
+def _remove_suffix_apple(path: str) -> str:
     """
     Strip off .so or .dylib.
 
@@ -353,7 +370,7 @@ def _remove_suffix_apple(path):
 
 
 @_uniquified
-def _finding_libpython():
+def _finding_libpython() -> Iterable[str]:
     """
     Iterate over existing libpython paths.
 
@@ -374,7 +391,7 @@ def _finding_libpython():
             _logger.debug("Not found.")
 
 
-def find_libpython():
+def find_libpython() -> str | None:
     """
     Return a path (`str`) to libpython or `None` if not found.
 
@@ -385,17 +402,17 @@ def find_libpython():
     """
     for path in _finding_libpython():
         return os.path.realpath(path)
+    return None
 
 
-def _print_all(items):
-    for x in items:
-        print(x)
-
-
-def _cli_find_libpython(cli_op, verbose):
+def _cli_find_libpython(cli_op: str, verbose: bool) -> int:
     # Importing `logging` module here so that using `logging.debug`
     # instead of `_logger.debug` outside of this function becomes an
     # error.
+
+    def _print_all(items: Iterable[str]) -> None:
+        for x in items:
+            print(x)
 
     if verbose:
         logging.basicConfig(format="%(levelname)s %(message)s", level=logging.DEBUG)
@@ -414,6 +431,8 @@ def _cli_find_libpython(cli_op, verbose):
             return 1
         print(path, end="")
 
+    return 0
+
 
 def _log_platform_info():
     print(f"is_windows = {_is_windows}")
@@ -423,7 +442,7 @@ def _log_platform_info():
     print(f"is_posix = {_is_posix}")
 
 
-def main(args=None):
+def main(args: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Print debugging information."
@@ -463,4 +482,4 @@ def main(args=None):
     )
 
     ns = parser.parse_args(args)
-    parser.exit(_cli_find_libpython(**vars(ns)))
+    return _cli_find_libpython(**vars(ns))
