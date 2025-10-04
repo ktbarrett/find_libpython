@@ -51,3 +51,10 @@ ignore = [
 
 [tool.mypy]
 packages = ["find_libpython"]
+
+[dependency-groups]
+dev = [
+    "mypy",
+    "nox[uv]",
+    "ruff",
+]
