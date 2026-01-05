@@ -12,7 +12,7 @@ repos:
   - id: check-merge-conflict
 
 - repo: https://github.com/henryiii/validate-pyproject-schema-store
-  rev: "2025.11.21"
+  rev: "2026.01.02"
   hooks:
     - id: validate-pyproject
 
