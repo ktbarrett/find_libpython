@@ -147,7 +147,8 @@ def _uniquified(func: Callable[P, Iterable[str]]) -> Callable[P, Iterable[str]]:
 def _get_proc_library() -> Iterable[str]:
     pid = os.getpid()
     path = f"/proc/{pid}/maps"
-    lines = open(path).readlines()
+    with open(path) as f:
+        lines = f.readlines()
 
     for line in lines:
         path = line.split(" ", 5)[5].strip()
