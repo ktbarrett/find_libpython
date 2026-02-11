@@ -1,12 +1,15 @@
 [build-system]
-requires = ["setuptools>=61.2"]
+requires = ["setuptools>=77.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "find_libpython"
 authors = [{name = "Takafumi Arakaki"}]
 maintainers = [{name = "Kaleb Barrett", email = "dev.ktbarrett@gmail.com"}]
-license = {text = "MIT"}
+license = "MIT"
+license-files = [
+    "LICENSE",
+]
 description = "Finds the libpython associated with your environment, wherever it may be hiding"
 classifiers = [
     "Programming Language :: Python :: 3",
