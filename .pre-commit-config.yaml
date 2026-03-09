@@ -12,19 +12,19 @@ repos:
   - id: check-merge-conflict
 
 - repo: https://github.com/henryiii/validate-pyproject-schema-store
-  rev: "2026.02.22"
+  rev: "2026.03.06"
   hooks:
     - id: validate-pyproject
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.4.1
+  rev: v2.4.2
   hooks:
   - id: codespell
     additional_dependencies:
     - tomli
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.4
+  rev: v0.15.5
   hooks:
     # Run the linter.
     - id: ruff-check
