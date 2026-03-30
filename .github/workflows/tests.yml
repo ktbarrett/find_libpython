@@ -33,7 +33,7 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -57,7 +57,7 @@ jobs:
       - name: Run tests
         run: python -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -84,7 +84,7 @@ jobs:
       - name: Run Tests
         run: python -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -102,7 +102,7 @@ jobs:
       - name: Run Tests
         run: python3 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -139,7 +139,7 @@ jobs:
           pip install nox
           nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -163,7 +163,7 @@ jobs:
         run: |
           nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -189,7 +189,7 @@ jobs:
         run: |
           python3 -m nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -218,7 +218,7 @@ jobs:
         run: |
           nox -e tests
       - name: Upload to codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
