@@ -118,7 +118,6 @@ jobs:
       matrix:
         msystem:
           - MSYS
-          - MINGW32
           - MINGW64
           - UCRT64
     steps:
