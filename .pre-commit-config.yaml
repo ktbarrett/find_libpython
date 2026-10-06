@@ -12,7 +12,7 @@ repos:
   - id: check-merge-conflict
 
 - repo: https://github.com/henryiii/validate-pyproject-schema-store
-  rev: "2026.09.25"
+  rev: "2026.10.02"
   hooks:
     - id: validate-pyproject
 
@@ -24,7 +24,7 @@ repos:
     - tomli
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.16.9
+  rev: v0.16.10
   hooks:
     # Run the linter.
     - id: ruff-check
@@ -35,7 +35,7 @@ repos:
     - id: ruff-format
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v2.3.1
+  rev: v2.4.0
   hooks:
   - id: mypy
 
